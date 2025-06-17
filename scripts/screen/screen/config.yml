@@ -1,0 +1,12 @@
+input_data:
+  file_path: "/workspace/experiment3/data/train_kang.h5ad"
+
+experiment:
+  condition: "condition"
+  condition_control: "control"
+  condition_stimulated: "stimulated"
+  batch: "cell_type"
+  target: "CD4T"
+  experiment_name: "gb"
+  output_dir: "/workspace/experiment3/results"
+ 
