@@ -1,0 +1,5 @@
+file_path	condition	condition_control	condition_stimulated	batch	target	experiment_name	output_dir	Tools
+data/kang.h5ad	condition	control	stimulated	cell_type	CD4T,CD8T,Dendritic,FCGR3A+Mono,B,CD14+Mono,NK	kang	results/kang/	cellot,cpa,scdisinfact,scpram,scvidr,scgen,scpregan,screen,trvae,linear,couplevae
+data/gb.h5ad	Treatment	DMSO	Panobinostat	Patients	PW030,PW032,PW034,PW036,PW040	gb	results/gb/	cellot,cpa,scdisinfact,scpram,scvidr,scgen,scpregan,screen,trvae,linear,couplevae
+data/hpoly.h5ad	condition	Control	HpolyDay10	cell_label	Stem,EnterocyteProgenitor,TA,TAEarly,Enterocyte	hpoly	results/hpoly/	cellot,cpa,scdisinfact,scpram,scvidr,scgen,scpregan,screen,trvae,linear,couplevae
+data/species.h5ad	condition	unst	LPS6	species	mouse,pig,rabbit,rat	species	results/species/	cellot,cpa,scdisinfact,scpram,scvidr,scgen,scpregan,screen,trvae,linear,couplevae
