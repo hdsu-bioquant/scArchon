@@ -1,3 +1,7 @@
+<div style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
+    <img src="images/002.png" alt="Description of Image" style="width: 60%; margin: 0 auto;">
+</div>
+
 # Requirements
 - CUDA 12.4+ (tested on 12.4)
 - Singularity 3.6+ (tested on 3.6 and 4.1)
