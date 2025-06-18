@@ -84,8 +84,8 @@ with open(dataset_file) as config:
 # Define the final output file using wildcards
 rule all:
     input:
-        output_tools
-        output_metrics
+        output_tools,
+        output_metrics,
         output_benchmark
 
 

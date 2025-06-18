@@ -10,8 +10,11 @@ While many tools exist to predict single-cell responses to perturbations (e.g., 
 We invite the community to adopt and contribute to scArchon, helping accelerate progress in single-cell perturbation modeling.
 
 # Requirements
+Running the deep learning models require GPU with CUDA 12.4+. To pull the environments from Dockerhub, Singularity 3.6+ needs to be installed on your machine. To store the environments, a disk space of about 50 Go is required. 
+
 - CUDA 12.4+ (tested on 12.4)
 - Singularity 3.6+ (tested on 3.6 and 4.1)
+- About 50 Go disk space to download all environments 
 
 In details, the different tools require following CUDA versions:
 
@@ -35,7 +38,7 @@ Below CUDA 11.6, no tool can be ran. After CUDA 12.4 all tools can be ran.
     conda activate snakemake_env
     ```
 - Activate the environment: `conda activate snakemake_env`
-- Ensure that you have a GPU (see above for versions) and singularity running (if on a cluster, maybe can be loaded using `module avail`, then `module load singularity-X.X.X`)
+- Ensure that you have a GPU with CUDA 12.4+ and Singularity 3.6+ available
 
 # Setting up your experiments
 - You can set up your experiments in `config/datasets.tsv`.
@@ -52,13 +55,17 @@ Below CUDA 11.6, no tool can be ran. After CUDA 12.4 all tools can be ran.
 
     - `--use-singularity` will pull the docker images from the web
     - `--singularity-args '--nv -B .:/dum'` ensures GPU usage
-    -  `--cores all` requests all CPU available
+    -  `--cores all` requests all CPUs available
     - `--jobs 1` runs one job after the other
-    - `--keep-going` ensures the pipeline continues running even if there is a bug in one of the tool
+    - `--keep-going` ensures the pipeline continues running even if there is a bug in one of the tool to not lose time
 
-# Preprocessing
-- Normalise your dataset as follows:
-    - total counts normalised to 10'000
-    - log1p
-    - ensure unique var and obs names. Ideally you have both HUGO and ENSEMBL namings.
+# User-useful information
+- Pulling environment via singularity may take some time depending on your downloading speed. The environment only needs to be pulled once. It will be stored under `.snakemake/singularity`.
+- The running time of some tools can be long. Given the performance of cellOT, CPA and scPreGAN, we suggest you to leave them out of your run.
+
+<div style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
+    <img src="images/003.png" alt="Description of Image" style="width: 80%; margin: 0 auto;">
+</div>
+
+
 
