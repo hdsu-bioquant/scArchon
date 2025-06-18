@@ -276,29 +276,6 @@ rule run_trvae:
         echo "Runtime (seconds): $runtime" > "$log_file"
         """
 
-rule run_couplevae:
-    input:
-        config="config/config_{experiment_name}_couplevae_{target}.yaml"
-    output:
-        "flags/h5ad/output_run_flag_{experiment_name}_couplevae_{target}_h5ad.txt"
-    singularity:
-        "docker://hdsu/couplevae_env:latest"  
-    shell:
-        """
-        start_time=$(date +%s) 
-        source /opt/conda/etc/profile.d/conda.sh 
-        conda activate couplevae
-        python scripts/couplevae/snkmk_couplevae.py --config {input.config}
-
-        end_time=$(date +%s)
-        runtime=$((end_time - start_time))
-        
-        # Log the runtime
-        log_file="logs/{wildcards.experiment_name}_couplevae_{wildcards.target}.txt"
-        echo "Runtime (seconds): $runtime" > "$log_file"
-        """
-
-
 rule encode:
     input:
         config="config/config_{experiment_name}_cellot_{target}.yaml"
