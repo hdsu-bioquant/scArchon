@@ -27,7 +27,7 @@ target = args.target
 
 # Define paths
 data_path = f'results/{experiment_name}/h5ad/{experiment_name}_{tool}_{target}.h5ad'  # Path to the folder containing .h5ad files
-results_path = f'results/{experiment_name}/metrics'  # Path to save results
+results_path = f'results/{experiment_name}/'  # Path to save results
 
 # Create the results directory if it doesn't exist
 os.makedirs(results_path, exist_ok=True)
@@ -64,14 +64,24 @@ adata = sc.read_h5ad(data_path)
 
 
 # Initialize Metrics
-metrics = Metrics(adata, keys, bootstrap=bootstrap_count)
+metrics = Metrics(adata, keys, bootstrap=bootstrap_count, experiment_name=experiment_name)
 
 # Save results in the appropriate directory structure
 os.makedirs(results_path, exist_ok=True)
 
 exp_index = f'{experiment_name}_{tool}_{target}'
+
+# Define output subdirectories
+output_path = Path(results_path)
+biology_dir = Path(results_path) / 'biology'
+metrics_dir = Path(results_path) / 'metrics'
+
+# Create directories if they do not exist
+output_path.mkdir(parents=True, exist_ok=True)
+biology_dir.mkdir(parents=True, exist_ok=True)
+metrics_dir.mkdir(parents=True, exist_ok=True)
 try:
-    metrics.get_results(output_path=results_path, exp_index=exp_index)
+    metrics.get_scores(output_path=str(output_path), exp_index=exp_index)
     # Create a flag file indicating completion
     Path(f'flags/metrics/output_run_flag_{exp_index}_metrics.txt').touch()
     print(f"Results saved for Experiment={experiment_name}, Tool={tool}, Target={target}, Exp_Index={exp_index}")

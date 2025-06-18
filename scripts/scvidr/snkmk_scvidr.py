@@ -126,12 +126,12 @@ print(f'--------------- Training scvidr ---------------')
 model.train(
     max_epochs=100,
      batch_size=128,
-     early_stopping=False,
+     early_stopping=True,
      early_stopping_patience=25)
 
 print(f'--------------- Predicting ---------------')
 
-pred, _ = model.predict(ctrl_key= condition_control, treat_key = condition_stimulated, cell_type_to_predict=target) 
+pred, _, _ = model.predict(ctrl_key= condition_control, treat_key = condition_stimulated, cell_type_to_predict=target, regression=True) 
 pred.obs[condition] = 'predicted'
 ctrl_adata = adata[((adata.obs[batch] == target) & (adata.obs[condition] == condition_control))]
 ctrl_adata.obs[condition] = 'control'

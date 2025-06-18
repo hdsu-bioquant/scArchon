@@ -177,6 +177,7 @@ model.train(max_epochs=100,
             use_gpu=True,
             batch_size=64,
             plan_kwargs=trainer_params,
+            early_stopping_patience=5,
             check_val_every_n_epoch=5,
             save_path=output_dir_path
            )
@@ -207,6 +208,7 @@ stimulated_adata = anndata.AnnData(X=x_stimulated, obs=stimulated_obs)
 
 # Step 3: Concatenate the AnnData objects
 combined_adata = control_adata.concatenate(predicted_adata, stimulated_adata)
+combined_adata.var.index = adata.var.index
 
 print(f'--------------- Saving results ---------------')
 

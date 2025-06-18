@@ -105,6 +105,7 @@ adata.obs[condition] = adata.obs[condition].replace(
 )
 adata.write(f"{output_dir_path}/h5ad/{experiment_name}_screen_{target}.h5ad")
 
+os.remove(f"{output_dir_path}/{experiment_name}_screen_{target}.h5ad")
 
 # Output flag
 file_path = Path(f'flags/h5ad/output_run_flag_{experiment_name}_screen_{target}_h5ad.txt')

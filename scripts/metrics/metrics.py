@@ -415,7 +415,7 @@ class Metrics:
 
         biology_path = os.path.join(output_path, 'biology')
         self.get_umap_pca_tsne_plots(output_path=biology_path, exp_index=exp_index)
-        #self.enrichment_experiment(output_path=biology_path, exp_index=exp_index)
+        self.enrichment_experiment(output_path=biology_path, exp_index=exp_index)
 
         # Save the results to a CSV file
         if not os.path.exists(output_path):
@@ -563,7 +563,7 @@ class Metrics:
             msigdb_results =  gp.enrichr(
                 gene_list=degs,
                 gene_sets=['MSigDB_Hallmark_2020'],
-                organism='human',
+                organism='Human',
                 outdir=None,
                 background=list(adata.var.index)
             )
@@ -573,8 +573,9 @@ class Metrics:
                 gene_sets=['GO_Biological_Process_2021',
                         'GO_Molecular_Function_2021',
                         'GO_Cellular_Component_2021'],
-                organism='Human',
+                organism='Mouse',
                 outdir=None)
+
 
             kegg_results = gp.enrichr(
                 gene_list=degs,

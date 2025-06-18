@@ -385,60 +385,21 @@ def plot_combined_tool_metrics_single_dataset(summary_csv, full_tool_color_mappi
         tools_to_plot = [tool for tool in df['Tool'].unique() if tool != 'cellot']
 
     if metrics is None:
-        metrics = ['mse_mean', 'wasserstein_mean', 't_test_mean', 'common_DEGs_top_20_mean', 'common_enrichment_terms_mean']
+        metrics = ['mse_mean', 'wasserstein_mean', 't_test_mean', 'common_DEGs_top_20_mean', 'common_enrichment_terms_mean', 'cosine_distance_mean', 'pearson_distance_mean', 'common_DEGs_top_100_mean', 'mmd_mean', 'r2_20_degs_mean', 'r2_100_degs_mean', 'r2_all_degs_mean']
 
-    # Put cellot at far left
     tools_with_cellot = ['cellot'] + tools_to_plot
-
-    # Tool color mapping including cellot
     tool_color_mapping = {tool: full_tool_color_mapping[tool] for tool in tools_with_cellot}
 
-    # === Ranking ===
-    default_metric_directions = {
-        'mse_mean': False,
-        'wasserstein_mean': False,
-        't_test_mean': False,
-        'common_DEGs_top_20_mean': True,
-        'common_enrichment_terms_mean': True
-    }
+    integer_y_metrics = ['common_DEGs_top_20_mean', 'common_DEGs_top_100_mean', 'common_DEGs_all_mean', 'common_enrichment_terms_mean', 'r2_20_degs_mean', 'r2_100_degs_mean', 'r2_all_degs_mean']
 
-    all_ranks = []
+
     for metric in metrics:
-        higher_is_better = default_metric_directions.get(metric, True)
-        metric_data = (
-            df[df['Tool'].isin(tools_with_cellot)]
-            .groupby('Tool')[metric].mean()
-            .reset_index()
-        )
-        metric_data['Rank'] = metric_data[metric].rank(ascending=not higher_is_better, method='min')
-        metric_data['Metric'] = metric
-        all_ranks.append(metric_data[['Tool', 'Metric', 'Rank']])
-
-    rankings_df = pd.concat(all_ranks)
-    avg_rank = rankings_df.groupby('Tool')['Rank'].mean().reset_index()
-    avg_rank['Score'] = 1 - (avg_rank['Rank'] - 1) / (len(tools_with_cellot) - 1)
-    avg_rank = avg_rank.sort_values('Score', ascending=False)
-
-    sorted_tools = avg_rank['Tool'].tolist()
-    palette_sorted = [full_tool_color_mapping[tool] for tool in sorted_tools]
-
-    integer_y_metrics = ['common_DEGs_top_20_mean', 'common_enrichment_terms_mean']
-    n_metrics = len(metrics)
-    n_cols = 4
-    n_rows = math.ceil(n_metrics / n_cols)
-
-    fig, axs = plt.subplots(n_rows, n_cols, figsize=(n_cols * 5, n_rows * 5), constrained_layout=True)
-    axs = axs.flatten()
-
-    for idx, metric in enumerate(metrics):
-        ax = axs[idx]
-
+        fig, ax = plt.subplots(figsize=(6, 5))
         df_metric = df[df['Tool'].isin(tools_with_cellot)]
         cellot_vals = df_metric[df_metric['Tool'] == 'cellot'][metric].dropna()
         tools_vals = df_metric[df_metric['Tool'] != 'cellot'][metric].dropna()
 
         if len(cellot_vals) == 0 or len(tools_vals) == 0:
-            # fallback: plot normally if data missing
             sns.boxplot(
                 x='Tool', y=metric, data=df_metric,
                 palette=tool_color_mapping, ax=ax,
@@ -446,35 +407,43 @@ def plot_combined_tool_metrics_single_dataset(summary_csv, full_tool_color_mappi
                 dodge=False
             )
             ax.set_xticklabels(tools_with_cellot, rotation=45, fontsize=8)
-            ax.set_title(metric, fontsize=10)
-            ax.set_xlabel('')
-            ax.set_ylabel('')
+            ax.set_title(metric, fontsize=12)
+            ax.set_xlabel('')  # remove x-axis label
+            ax.set_ylabel('')  # remove y-axis label
             ax.tick_params(axis='y', labelsize=8)
             ax.grid(False)
             if metric in integer_y_metrics:
                 ax.yaxis.get_major_locator().set_params(integer=True)
+            plt.tight_layout()
+            fig.savefig(f"results/benchmark/{metric}.pdf", dpi=300)
+            plt.close(fig)
             continue
 
         cellot_min = cellot_vals.min()
         tools_max = tools_vals.max()
 
         if cellot_min > tools_max:
-            # Create broken y-axis with two subplots inside this subplot's bounding box
             bbox = ax.get_position()
             fig.delaxes(ax)
-
-            # Axes positions
-            fig_height = bbox.height
             fig_width = bbox.width
+            fig_height = bbox.height
             x0 = bbox.x0
             y0 = bbox.y0
-
             gap = 0.02
 
-            ax_bottom = fig.add_axes([x0, y0, fig_width, fig_height * 0.6])
-            ax_top = fig.add_axes([x0, y0 + fig_height * 0.6 + gap, fig_width, fig_height * 0.4], sharex=ax_bottom)
+            ax_bottom = fig.add_axes([x0, y0, fig_width, fig_height*0.48])
+            ax_top = fig.add_axes([x0, y0 + fig_height*0.48 + gap, fig_width, fig_height*0.48], sharex=ax_bottom)
 
-            # Bottom plot (tools)
+            sns.boxplot(
+                x='Tool', y=metric,
+                data=df_metric[df_metric['Tool'] == 'cellot'],
+                palette={'cellot': tool_color_mapping['cellot']},
+                ax=ax_top,
+                order=['cellot'],
+                width=0.6,
+                dodge=False
+            )
+
             sns.boxplot(
                 x='Tool', y=metric,
                 data=df_metric[df_metric['Tool'] != 'cellot'],
@@ -487,43 +456,34 @@ def plot_combined_tool_metrics_single_dataset(summary_csv, full_tool_color_mappi
             ax_bottom.set_ylim(tools_vals.min() * 0.95, tools_max * 1.05)
             ax_bottom.tick_params(axis='x', rotation=45, labelsize=8)
             ax_bottom.tick_params(axis='y', labelsize=8)
+            ax_bottom.set_xlabel('')  # remove x-axis label
+            ax_bottom.set_ylabel('')  # remove y-axis label
             if metric in integer_y_metrics:
                 ax_bottom.yaxis.get_major_locator().set_params(integer=True)
             ax_bottom.grid(False)
 
-            # Top plot (cellot)
-            sns.boxplot(
-                x='Tool', y=metric,
-                data=df_metric[df_metric['Tool'] == 'cellot'],
-                palette={'cellot': tool_color_mapping['cellot']},
-                ax=ax_top,
-                order=['cellot'],
-                width=0.6,
-                dodge=False
-            )
+            
             ax_top.set_ylim(cellot_min * 0.95, cellot_vals.max() * 1.05)
             ax_top.tick_params(axis='x', which='both', bottom=False, labelbottom=False)
             ax_top.tick_params(axis='y', labelsize=8)
+            ax_top.set_xlabel('')  # remove x-axis label
+            ax_top.set_ylabel('')  # remove y-axis label
             if metric in integer_y_metrics:
                 ax_top.yaxis.get_major_locator().set_params(integer=True)
             ax_top.grid(False)
 
-            # Hide spines between ax_top and ax_bottom
             ax_top.spines['bottom'].set_visible(False)
             ax_bottom.spines['top'].set_visible(False)
 
-            # Draw diagonal break marks
-            d = 0.015
+            d = 0.03
             kwargs = dict(marker=[(-1, -d), (1, d)], markersize=12,
                           linestyle="none", color='k', mec='k', mew=1, clip_on=False)
             ax_top.plot([0, 1], [0, 0], transform=ax_top.transAxes, **kwargs)
             ax_bottom.plot([0, 1], [1, 1], transform=ax_bottom.transAxes, **kwargs)
 
-            # Set title on top axis
-            ax_top.set_title(metric, fontsize=10)
+            ax_top.set_title(metric, fontsize=12)
 
         else:
-            # Normal boxplot (no break)
             sns.boxplot(
                 x='Tool', y=metric, data=df_metric,
                 palette=tool_color_mapping, ax=ax,
@@ -531,61 +491,87 @@ def plot_combined_tool_metrics_single_dataset(summary_csv, full_tool_color_mappi
                 dodge=False
             )
             ax.set_xticklabels(tools_with_cellot, rotation=45, fontsize=8)
-            ax.set_title(metric, fontsize=10)
-            ax.set_xlabel('')
-            ax.set_ylabel('')
+            ax.set_title(metric, fontsize=12)
+            ax.set_xlabel('')  # remove x-axis label
+            ax.set_ylabel('')  # remove y-axis label
             ax.tick_params(axis='y', labelsize=8)
             ax.grid(False)
             if metric in integer_y_metrics:
                 ax.yaxis.get_major_locator().set_params(integer=True)
 
-    # Remove unused subplots
-    for i in range(n_metrics, len(axs)):
-        fig.delaxes(axs[i])
-
-    # === Score Plot ===
-    fig_score, ax_score = plt.subplots(figsize=(5, n_rows * 1.5))
-    sns.barplot(data=avg_rank, y='Tool', x='Score', palette=palette_sorted, ax=ax_score)
-    ax_score.set_title('Tool Scores', fontsize=12)
-    ax_score.set_xlabel('')
-    ax_score.set_ylabel('')
-    ax_score.grid(False)
-    sns.despine(ax=ax_score, left=True, bottom=True)
-
-    # === Legend ===
-    handles = [Patch(color=tool_color_mapping['cellot'], label='cellot')] + [
-        Patch(color=tool_color_mapping[tool], label=tool) for tool in tools_to_plot
-    ]
-    labels = ['cellot'] + tools_to_plot
-
-    fig.legend(
-        handles, labels,
-        title='Tool', loc='center left',
-        bbox_to_anchor=(1.02, 0.5), borderaxespad=0., frameon=False
-    )
-
-    plt.tight_layout(rect=[0, 0.03, 0.98, 0.95])
-
-    os.makedirs("results/benchmark", exist_ok=True)
-    fig.savefig("results/benchmark/main_summary.pdf", dpi=300)
-    fig_score.savefig("results/benchmark/score_summary.pdf", dpi=300)
-    plt.close(fig)
-    plt.close(fig_score)
+        plt.tight_layout()
+        fig.savefig(f"results/{args.experiment_name}/benchmark/{metric}.pdf", dpi=300)
+        plt.close(fig)
 
 
 
+def plot_tool_rankings_barplot(summary_csv, full_tool_color_mapping, tools_to_plot=None, metrics=None, figsize=(8,6)):
+    import pandas as pd
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import os
+
+    sns.set_style('whitegrid')
+    plt.rcParams.update({'axes.facecolor': 'white'})
+
+    df = pd.read_csv(summary_csv)
+
+    if tools_to_plot is None:
+        # Keep tools in the order they appear in the csv
+        tools_to_plot = df['Tool'].unique().tolist()
+
+    if metrics is None:
+        metrics = [
+            'mse_mean', 'wasserstein_mean', 't_test_mean',
+            'common_DEGs_top_20_mean', 'common_enrichment_terms_mean'
+        ]
+
+    default_metric_directions = {
+        'mse_mean': False,
+        'wasserstein_mean': False,
+        't_test_mean': False,
+        'common_DEGs_top_20_mean': True,
+        'common_enrichment_terms_mean': True
+    }
+
+    # Compute rankings per metric
+    all_ranks = []
+    for metric in metrics:
+        higher_is_better = default_metric_directions.get(metric, True)
+        metric_means = df[df['Tool'].isin(tools_to_plot)].groupby('Tool')[metric].mean().reset_index()
+        metric_means['Rank'] = metric_means[metric].rank(ascending=not higher_is_better, method='min')
+        metric_means['Metric'] = metric
+        all_ranks.append(metric_means[['Tool', 'Rank']])
+
+    rankings_df = pd.concat(all_ranks)
+
+    # Average rank per tool (in original tool order)
+    avg_rank = rankings_df.groupby('Tool')['Rank'].mean().reset_index()
+    avg_rank['Score'] = 1 - (avg_rank['Rank'] - 1) / (len(tools_to_plot) - 1)
+
+    # Preserve original tool order
+    avg_rank['Tool'] = pd.Categorical(avg_rank['Tool'], categories=tools_to_plot, ordered=True)
+    avg_rank = avg_rank.sort_values('Tool')
+
+    # Get colors from mapping for tools present
+    palette = [full_tool_color_mapping.get(tool, '#333333') for tool in avg_rank['Tool']]
+
+    plt.figure(figsize=figsize)
+    sns.barplot(data=avg_rank, x='Score', y='Tool', palette=palette)
+    plt.title('Tool Scores (Average Ranking)')
+    plt.xlabel('Score (Higher is Better)')
+    plt.ylabel('Tool')
+    plt.grid(False)
+    sns.despine(left=True, bottom=True)
+    plt.tight_layout()
 
 
+    avg_rank.to_csv(f"results/{args.experiment_name}/benchmark/ranking.csv", index=False)
+    plt.savefig(f"results/{args.experiment_name}/benchmark/ranking.pdf", dpi=300)
+    plt.show()
+    plt.close()
 
 
-
-
-
-
-
-
-
-    
 
 
 
@@ -593,8 +579,9 @@ if __name__ == '__main__':
     args = get_arguments()
     tool_color_mapping = generate_color_palette(args.experiment_name)
     create_summary_csv(args.experiment_name, args.without)
-    plot_all_targets_per_cell_from_summary(f'results/{args.experiment_name}/benchmark/{args.experiment_name}_summary.csv', args.without)
-    plot_boxplots_per_tool(f'results/{args.experiment_name}/benchmark/{args.experiment_name}_summary.csv', tool_color_mapping = tool_color_mapping, exclude_tools = args.without)
-    plot_boxplots_per_tool_var(f'results/{args.experiment_name}/benchmark/{args.experiment_name}_summary.csv', tool_color_mapping = tool_color_mapping, exclude_tools = args.without)
+    #plot_all_targets_per_cell_from_summary(f'results/{args.experiment_name}/benchmark/{args.experiment_name}_summary.csv', args.without)
+    #plot_boxplots_per_tool(f'results/{args.experiment_name}/benchmark/{args.experiment_name}_summary.csv', tool_color_mapping = tool_color_mapping, exclude_tools = args.without)
+    #plot_boxplots_per_tool_var(f'results/{args.experiment_name}/benchmark/{args.experiment_name}_summary.csv', tool_color_mapping = tool_color_mapping, exclude_tools = args.without)
     plot_combined_tool_metrics_single_dataset(f'results/{args.experiment_name}/benchmark/{args.experiment_name}_summary.csv', full_tool_color_mapping = tool_color_mapping)
+    plot_tool_rankings_barplot(f'results/{args.experiment_name}/benchmark/{args.experiment_name}_summary.csv', full_tool_color_mapping = tool_color_mapping)
     Path(f'flags/benchmark/output_run_flag_{args.experiment_name}_benchmark.txt').touch()

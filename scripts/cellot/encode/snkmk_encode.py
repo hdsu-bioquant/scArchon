@@ -101,7 +101,7 @@ scgen.setup_anndata(adata, batch_key=condition, labels_key=batch)
 model = scgen.SCGEN(adata, n_latent = 50)
 
 parent_folder = os.path.dirname(os.path.dirname(input_file_path))
-save_path = os.path.join(parent_folder, "results", f"intermediate_results_{experiment_name}_cellot_{target}", "model.pt")
+save_path = os.path.join(parent_folder, "results/cellot_intermediate", f"intermediate_results_{experiment_name}_cellot_{target}", "model.pt")
 model.save(save_path, overwrite=True)
 
 print(f'--------------- Training scGen ---------------')

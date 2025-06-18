@@ -112,6 +112,7 @@ key_dic = {'condition_key': condition,
            }
 adata_to_pred = adata[((adata.obs[batch] == target) &
                        (adata.obs[condition] == condition_control))]
+
 pred = model.predict(train_adata=adata_train,
                      cell_to_pred=target,
                      key_dic=key_dic,

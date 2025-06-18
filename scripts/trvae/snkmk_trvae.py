@@ -118,7 +118,7 @@ model = CVAE(adata_train.n_vars, num_classes=len(adata_train.obs[batch].unique()
 print(f'--------------- Training trvae ---------------')
 
 trainer = train.Trainer(model, adata_train, condition_key=condition)
-trainer.train_trvae(200, 512, early_patience=200)
+trainer.train_trvae(200, 512, early_patience=50)
 
 print(f'--------------- Predicting ---------------')
 
