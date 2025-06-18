@@ -1,8 +1,5 @@
 .snakemake
-scgen_env-latest.simg
-scgen-env.yml
 logs   
-envs
 __pycache__
 Miniconda3-latest-Linux-x86_64.sh
 run_scgen.log
@@ -14,6 +11,4 @@ cellot.egg-info
 .config
 .nv
 .local
-envs
-config
 flags

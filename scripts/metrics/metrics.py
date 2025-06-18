@@ -447,7 +447,7 @@ class Metrics:
                 gene_sets=['GO_Biological_Process_2021',
                         'GO_Molecular_Function_2021',
                         'GO_Cellular_Component_2021'],
-                organism='Mouse',
+                organism='Human',
                 outdir=None)
 
 
