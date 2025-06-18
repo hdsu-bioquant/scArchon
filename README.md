@@ -44,7 +44,7 @@ Below CUDA 11.6, no tool can be ran. After CUDA 12.4 all tools can be ran.
 - You can set up your experiments in `config/datasets.tsv`.
 
 <div align="center">
-    <img src="images/001.png" alt="Description of Image" style="width: 80%; margin: 0 auto;">
+    <img src="images/001.png" alt="Description of Image" style="width: 100%; margin: 0 auto;">
 </div>
 
 - If you are running the tools on a single GPU, it is suggested to run the tools one by one, otherwise the tasks will swap and will take overall longer. We suggest to run the pipeline with following command:
