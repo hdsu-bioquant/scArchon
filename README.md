@@ -40,7 +40,7 @@ Below CUDA 11.6, no tool can be ran. After CUDA 12.4 all tools can be ran.
 - Activate the environment: `conda activate snakemake_env`
 - Ensure that you have a GPU with CUDA 12.4+ and Singularity 3.6+ available
 
-# Setting up your experiments
+# Running your experiments
 - You can set up your experiments in `config/datasets.tsv`.
 
 <div align="center">
