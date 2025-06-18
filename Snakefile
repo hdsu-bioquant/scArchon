@@ -46,12 +46,24 @@ with open(dataset_file) as config:
             # everey target
             for target in targets:
 
+                config_file_path = f"config/config_{experiment_name}_control_{target}.yaml"
+                input_all.append(config_file_path)
+
+                with open(config_file_path, "w") as out_conf:
+                    # writting the config file
+                    out_conf.write(f"input_data:\n  file_path: \"{parameters[0]}\"\n\n")
+                    out_conf.write(f"experiment:\n  condition: \"{parameters[1]}\"\n  condition_control: \"{parameters[2]}\"\n  ")
+                    out_conf.write(f"condition_stimulated: \"{parameters[3]}\"\n  batch: \"{parameters[4]}\"\n  ")
+                    out_conf.write(f"target: \"{target}\"\n  experiment_name: \"{experiment_name}\"\n  ")
+                    out_conf.write(f"output_dir: \"{parameters[7]}\"")
+
                 # every tool
                 for tool in tools:
 
                     # increment the input names list
                     output_tools.append(f"flags/h5ad/output_run_flag_{experiment_name}_{tool}_{target}_h5ad.txt")
                     output_metrics.append(f"flags/metrics/output_run_flag_{experiment_name}_{tool}_{target}_metrics.txt")
+                    output_metrics.append(f"flags/metrics/output_run_flag_{experiment_name}_control_{target}_metrics.txt")
                     
                     # path of the created config files
                     config_file_path = f"config/config_{experiment_name}_{tool}_{target}.yaml"
@@ -66,12 +78,14 @@ with open(dataset_file) as config:
                         out_conf.write(f"target: \"{target}\"\n  experiment_name: \"{experiment_name}\"\n  ")
                         out_conf.write(f"output_dir: \"{parameters[7]}\"")
 
+                    
+
 
 # Define the final output file using wildcards
 rule all:
     input:
-        output_tools,
-        output_metrics,
+        #output_tools
+        #output_metrics
         output_benchmark
 
 
@@ -374,6 +388,20 @@ rule compute_metrics:
         python scripts/metrics/compute_metrics.py --experiment_name {wildcards.experiment_name} --tool {wildcards.tool} --target {wildcards.target}
         """
 
+rule metrics_control:
+    input:
+        config="config/config_{experiment_name}_control_{target}.yaml"
+    output:
+        "flags/metrics/output_run_flag_{experiment_name}_control_{target}_metrics.txt"
+    singularity:
+        "docker://hdsu/metrics_env:latest"
+    shell:
+        """
+        source /opt/conda/etc/profile.d/conda.sh 
+        conda activate metrics
+        python scripts/metrics/metrics_control.py --config {input.config}
+        """
+
 rule run_benchmark:
     input:
         lambda wildcards: output_metrics
@@ -387,4 +415,5 @@ rule run_benchmark:
         conda activate metrics
         python scripts/metrics/benchmark.py --experiment_name {wildcards.experiment_name}
         """
+
 

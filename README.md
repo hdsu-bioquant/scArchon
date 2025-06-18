@@ -1,6 +1,13 @@
 <div style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
-    <img src="images/002.png" alt="Description of Image" style="width: 60%; margin: 0 auto;">
+    <img src="images/002.png" alt="Description of Image" style="width: 80%; margin: 0 auto;">
 </div>
+
+# scArchon: benchmark or run single-cell prediciton tools on your own dataset
+
+scArchon is a modular, reproducible benchmarking platform for evaluating single-cell perturbation response prediction tools. Built on Snakemake, it provides an extensible framework to compare deep learning methods across diverse datasets using both statistical and biological metrics. Why scArchon?
+While many tools exist to predict single-cell responses to perturbations (e.g., drug treatments), their systematic comparison has been limited. scArchon helps standardize benchmarking and highlights important nuances—such as when models with high quantitative scores fail to retain key biological signals.
+
+We invite the community to adopt and contribute to scArchon, helping accelerate progress in single-cell perturbation modeling.
 
 # Requirements
 - CUDA 12.4+ (tested on 12.4)
@@ -15,7 +22,7 @@ In details, the different tools require following CUDA versions:
 |scdisinfact|12.4|
 |scpram|11.6|
 |scvidr|12.1|
-|scpregan| <= 12.4 |
+|scpregan| 12.1 |
 |screen| 11.7|
 |scgen| 11.7|
 
