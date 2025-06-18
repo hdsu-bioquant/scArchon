@@ -12,6 +12,6 @@ cellot.egg-info
 .nv
 .local
 flags
-
+results
 config
 *config/datasets.tsv

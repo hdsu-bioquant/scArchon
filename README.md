@@ -1,6 +1,6 @@
-<div style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
-    <img src="images/002.png" alt="Description of Image" style="width: 80%; margin: 0 auto;">
-</div>
+<p align="center">
+  <img src="images/002.png" alt="Description of Image" width="80%">
+</p>
 
 # scArchon: benchmark or run single-cell prediciton tools on your own dataset
 
@@ -43,7 +43,7 @@ Below CUDA 11.6, no tool can be ran. After CUDA 12.4 all tools can be ran.
 # Setting up your experiments
 - You can set up your experiments in `config/datasets.tsv`.
 
-<div style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
+<div align="center">
     <img src="images/001.png" alt="Description of Image" style="width: 80%; margin: 0 auto;">
 </div>
 
@@ -63,8 +63,8 @@ Below CUDA 11.6, no tool can be ran. After CUDA 12.4 all tools can be ran.
 - Pulling environment via singularity may take some time depending on your downloading speed. The environment only needs to be pulled once. It will be stored under `.snakemake/singularity`.
 - The running time of some tools can be long. Given the performance of cellOT, CPA and scPreGAN, we suggest you to leave them out of your run.
 
-<div style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
-    <img src="images/003.png" alt="Description of Image" style="width: 80%; margin: 0 auto;">
+<div align="center">
+    <img src="images/003.png" alt="Description of Image" style="width: 100%; margin: 0 auto;">
 </div>
 
 
