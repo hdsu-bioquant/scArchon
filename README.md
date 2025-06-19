@@ -10,26 +10,11 @@ While many tools exist to predict single-cell responses to perturbations (e.g., 
 We invite the community to adopt and contribute to scArchon, helping accelerate progress in single-cell perturbation modeling.
 
 # Requirements
-Running the deep learning models require GPU with CUDA 12.4+. To pull the environments from Dockerhub, Singularity 3.6+ needs to be installed on your machine. To store the environments, a disk space of about 50 Go is required. 
+Running the deep learning models require GPU with CUDA 12.4+. To pull the environments from Dockerhub, Singularity 3.6+ needs to be installed on your machine. To store the environments, a disk space of about 50 GB is required. 
 
 - CUDA 12.4+ (tested on 12.4)
 - Singularity 3.6+ (tested on 3.6 and 4.1)
-- About 50 Go disk space to download all environments 
-
-In details, the different tools require following CUDA versions:
-
-||CUDA version|
-|--|----------|
-|cellot| 10.2 |
-|cpa| 11.7|
-|scdisinfact|12.4|
-|scpram|11.6|
-|scvidr|12.1|
-|scpregan| 12.1 |
-|screen| 11.7|
-|scgen| 11.7|
-
-Below CUDA 11.6, no tool can be ran. After CUDA 12.4 all tools can be ran. 
+- About 50 GB disk space to download all environments  
 
 # Installation
 - Create a conda environment with snakemake:
@@ -39,6 +24,22 @@ Below CUDA 11.6, no tool can be ran. After CUDA 12.4 all tools can be ran.
     ```
 - Activate the environment: `conda activate snakemake_env`
 - Ensure that you have a GPU with CUDA 12.4+ and Singularity 3.6+ available
+
+# Input / Output
+- Input: annotated dataset (adata) in .h5ad format. The dataset should ideally be count normalised (typically to 10,000) and log-normalised. The dataset should contain the couples control-perturbed necessary for the training along the control you want to get the prediciton from. See the Kang dataset and the section below for an example.
+- Outputs:
+    - .h5ad with prediction, alongside the control and perturbed data. Stored in `results/{experiment_name}/h5ad/{experiment_name}_{tool}_{target}.h5ad`
+    - Metrics results. Stored in `results/{experiment_name}/metrics/{experiment_name}_{tool}_{target}_distance_scores.csv`
+    - Dimension reduction visualisation. Stored in `results/{experiment_name}/biology/{experiment_name}_{tool}_{target}_dim_red_vis.pdf`
+    - Gene set enrichment analysis. Stored in `results/{experiment_name}/biology`
+        - the file `{experiment_name}_{tool}_{target}_predicted_singificantly_enriched_terms.csv` contains the the enriched terms from the top 1,000 DEGs between control and predicted
+        - the file `{experiment_name}_{tool}_{target}_stimulated_singificantly_enriched_terms.csv` contains the the enriched terms from the top 1,000 DEGs between control and stimulated
+        - the file `{experiment_name}_{tool}_{target}_common_singificantly_enriched_terms.csv` contains the the enriched terms from the top 1,000 DEGs between stimulated and predicted (and not the intersection of the two previous files!)
+        - the image `{experiment_name}_{tool}_{target}_shared_enriched_terms.pdf` shows the terms from predicted and stimulated files that are common to both
+        - the image `{experiment_name}_{tool}_{target}_score_genes_enriched_terms_only_in_predicted.pdf`shows the gene score for top 6 most statistically significant GO terms from the predicted file (compated to control)
+        - the image `{experiment_name}_{tool}_{target}_score_genes_enriched_terms_only_in_stimulated.pdf`shows the gene score for top 6 most statistically significant GO terms from the perturbed file (compated to control)
+        -  the image `{experiment_name}_{tool}_{target}_score_genes_enriched_terms_common.pdf` shows the gene score for top 6 most statistically significant GO terms that are shared between the predicted and perturbed files. 
+
 
 # Running your experiments
 - You can set up your experiments in `config/datasets.tsv`.
@@ -66,6 +67,28 @@ Below CUDA 11.6, no tool can be ran. After CUDA 12.4 all tools can be ran.
 <div align="center">
     <img src="images/003.png" alt="Description of Image" style="width: 100%; margin: 0 auto;">
 </div>
+
+|Tool | Singularity disk space|
+|-----|-----------------------|
+|cellOT| 2.22 GB |
+|cpa| 6.48 GB|
+|metrics| 8.04 GB|
+|scgen| does not start with 52 or ed83|
+
+In details, the different tools require following CUDA versions:
+
+||CUDA version|
+|--|----------|
+|cellot| 10.2 |
+|cpa| 11.7|
+|scdisinfact|12.4|
+|scpram|11.6|
+|scvidr|12.1|
+|scpregan| 12.1 |
+|screen| 11.7|
+|scgen| 11.7|
+
+Below CUDA 11.6, no tool can be ran. After CUDA 12.4 all tools can be ran.
 
 
 
