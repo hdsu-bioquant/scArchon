@@ -20,7 +20,6 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
 - Create a conda environment with snakemake:
     ```python
     conda create -c conda-forge -c bioconda -n snakemake_env snakemake
-    conda activate snakemake_env
     ```
 - Activate the environment: `conda activate snakemake_env`
 - Ensure that you have a GPU with CUDA 12.4+ and Singularity 3.6+ available
@@ -42,6 +41,8 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
 
 
 # Running your experiments
+
+- Clone or download scArchon and cd into the directory.
 - You can set up your experiments in `config/datasets.tsv`.
 
 <div align="center">
@@ -69,16 +70,17 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
 </div>
 
 |Tool | Singularity disk space|
-|-----|-----------------------|
-|cellOT| 2.22 GB |
+|-----|:-----------------------:|
+|cellot| 2.22 GB |
 |cpa| 6.48 GB|
+|scgen| 6.08 GB|
+|scvidr||
 |metrics| 8.04 GB|
-|scgen| does not start with 52 or ed83|
 
 In details, the different tools require following CUDA versions:
 
 ||CUDA version|
-|--|----------|
+|--|:----------:|
 |cellot| 10.2 |
 |cpa| 11.7|
 |scdisinfact|12.4|
@@ -87,8 +89,9 @@ In details, the different tools require following CUDA versions:
 |scpregan| 12.1 |
 |screen| 11.7|
 |scgen| 11.7|
+|trVAE| 12.4|
 
-Below CUDA 11.6, no tool can be ran. After CUDA 12.4 all tools can be ran.
+Below CUDA 11.6, no tool can be ran. After CUDA 12.4 all tools can be ran. Note that cellOT does not requ
 
 
 
