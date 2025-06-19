@@ -74,7 +74,8 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
 |cellot| 2.22 GB |
 |cpa| 6.48 GB|
 |scgen| 6.08 GB|
-|scvidr||
+|scvidr| 5.97 GB|
+|scpram||
 |metrics| 8.04 GB|
 
 In details, the different tools require following CUDA versions:
