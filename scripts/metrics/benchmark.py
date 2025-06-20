@@ -10,6 +10,13 @@ from matplotlib.lines import Line2D
 from itertools import chain
 import matplotlib.cm as cm
 import matplotlib.colors as mcolors
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from matplotlib.patches import Patch
+import math
+import os
+import numpy as np
 
 
 metrics = [
@@ -110,398 +117,146 @@ def create_summary_csv(experiment_name, without_tools):
     print(f"Summary CSV saved: {summary_file}")
 
 
-def plot_all_targets_per_cell_from_summary(summary_csv, exclude_tools=[]):
-    """
-    Take the summary CSV and plot the mean and var for all the targets.
-    On the x-axis plot the tools. On the y-axis plot the mean and var of the metric.
-    If the metric does not have var, just plot the mean as a dot.
-    """
-
-    # Create suffix for filename if tools are excluded
-    exclude_suffix = ""
-    if exclude_tools:
-        exclude_suffix = "_without_" + "_".join(exclude_tools)
-    
-    # Read the summary CSV which contains the computed metrics
-    summary_df = pd.read_csv(summary_csv)
-    
-    # Get unique tools and targets from the summary data
-    tools = summary_df['Tool'].unique()
-    targets = summary_df['Target'].unique()
-
-    # Define fixed colors for each target
-    target_colors = {
-        target: color for target, color in zip(targets, [
-            '#9e0142', '#d53e4f', '#f46d43', '#fdae61', '#fee08b', 
-            '#e6f598', '#abdda4', '#66c2a5', '#3288bd', '#5e4fa2'
-        ])
-    }
-
-    # Dictionary to store handles for legend
-    legend_handles = {}
-
-    # Plotting for each metric
-    for metric in metrics:
-        plt.figure(figsize=(7, 4))
-        plt.tight_layout(pad=0.5)
-        plt.subplots_adjust(left=0.15, right=0.95, top=0.9, bottom=0.3)
-
-        # Loop through all targets
-        for target in targets:
-            means, variances, labels = [], [], []
-            
-            # Loop through all tools to get mean and variance for each metric
-            for tool in tools:
-                if tool in exclude_tools:
-                    continue
-
-                # Filter for the specific tool and target
-                filtered_df = summary_df[(summary_df['Tool'] == tool) & (summary_df['Target'] == target)]
-                
-                if filtered_df.empty:
-                    continue
-
-                # Extract mean and variance for this metric
-                mean_col = f"{metric}_mean"
-                var_col = f"{metric}_var"
-
-                # Ensure the metric exists in the DataFrame
-                if mean_col in filtered_df.columns:
-                    mean = filtered_df[mean_col].values[0]
-                else:
-                    continue  # Skip if metric is missing
-                
-                if var_col in filtered_df.columns:
-                    var = filtered_df[var_col].values[0]
-                else:
-                    var = 0  # Default to 0 if variance is missing
-
-                # Append the results
-                means.append(mean)
-                variances.append(var)
-                labels.append(tool)
-
-            # Skip plotting if no valid data for this target
-            if not means:
-                continue
-
-            # Use the defined color mapping
-            color = target_colors[target]
-
-            # Plot mean and variance for each tool
-            for i, tool in enumerate(labels):
-                if variances[i] > 0:
-                    line = plt.errorbar(
-                        x=[tool],
-                        y=[means[i]],
-                        yerr=[variances[i]],
-                        fmt='o',
-                        capsize=5,
-                        color=color
-                    )
-                else:
-                    line, = plt.plot(
-                        tool,
-                        means[i],
-                        'o',  
-                        color=color,
-                        markersize=8  
-                    )
-
-            # Store the legend entry only once per target
-            if target not in legend_handles:
-                legend_handles[target] = line
-
-        # Only integer on axis if only integers to plot
-        # Check if all mean values are integers
-        all_means = means  # Use the current `means` list for this specific plot
-        if all(float(value).is_integer() for value in all_means):  
-            plt.gca().yaxis.set_major_locator(MaxNLocator(integer=True))
-
-        # Customize the plot
-        plt.title(f'{metric}', fontsize=10)
-        plt.xticks(rotation=45, fontsize=12)
-        plt.yticks(fontsize=10)
-        plt.legend(handles=legend_handles.values(), labels=legend_handles.keys(), title='Targets', 
-                   bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=12)
-        plt.tight_layout()
-
-        # Save the plot with the appropriate suffix
-        plot_filename = f"results/{args.experiment_name}/benchmark/{metric}_individual_targets{exclude_suffix}.pdf"
-        plt.savefig(plot_filename, dpi=300)
-        plt.close()
-
-        print(f"Plot saved for {metric}_mean_and_variance_plot.pdf")
-
-
-def plot_boxplots_per_tool(summary_csv, tool_color_mapping, exclude_tools=[]):
-    """
-    Create box plots of mean metric values for each tool, aggregated across targets.
-    Each box represents the distribution of mean values across targets for a tool.
-    Metrics not present for some tools (e.g. 'control') are skipped.
-    """
-
-    # Read the summary CSV
-    summary_df = pd.read_csv(summary_csv)
-
-    # Get unique tools
-    tools = summary_df['Tool'].unique()
-
-    # Determine which metrics are available
-    metric_suffixes = [col for col in summary_df.columns if col.endswith('_mean')]
-    available_metrics = [col.replace('_mean', '') for col in metric_suffixes]
-
-    exclude_suffix = ""
-    if exclude_tools:
-        exclude_suffix = "_without_" + "_".join(exclude_tools)
-
-    for metric in available_metrics:
-        plt.figure(figsize=(6, 5))
-        plt.tight_layout(pad=0.5)
-        plt.subplots_adjust(left=0.1, right=0.75, top=0.9, bottom=0.3)
-
-        plot_data = []
-        tool_colors = []
-
-        for tool in tools:
-            if tool in exclude_tools:
-                continue
-
-            mean_col = f"{metric}_mean"
-            if mean_col in summary_df.columns:
-                tool_means = summary_df.loc[summary_df['Tool'] == tool, mean_col].dropna().tolist()
-                if tool_means:
-                    plot_data.append((tool, tool_means))
-                    tool_colors.append(tool_color_mapping.get(tool, '#000000'))  # fallback to black
-
-        if not plot_data:
-            continue
-
-        tool_labels, tool_means = zip(*plot_data)
-
-        # Create the boxplot
-        box = sns.boxplot(data=tool_means, palette=tool_colors)
-
-        all_means = list(chain.from_iterable(tool_means))
-        if all(float(value).is_integer() for value in all_means):
-            plt.gca().yaxis.set_major_locator(MaxNLocator(integer=True))
-
-        plt.xticks(ticks=range(len(tool_labels)), labels=tool_labels, rotation=45, fontsize=12)
-        plt.title(f'{metric}', fontsize=10)
-        plt.grid(axis='y', linestyle='--', alpha=0.6)
-
-        legend_labels = [Line2D([0], [0], marker='o', color='w', markerfacecolor=color, markersize=10, label=tool)
-                         for tool, color in zip(tool_labels, tool_colors)]
-        plt.legend(handles=legend_labels, loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
-
-        plot_filename = f"results/{args.experiment_name}/benchmark/{metric}_boxplot{exclude_suffix}.pdf"
-        plt.savefig(plot_filename, dpi=300)
-        plt.close()
-
-        print(f"Box plot saved for {metric}_boxplot.pdf")
-
-
-
-def plot_boxplots_per_tool_var(summary_csv, tool_color_mapping, exclude_tools=[]):
-    """
-    Create box plots of variance metric values for each tool, aggregated across targets.
-    Each box represents the distribution of variance values across targets for a tool.
-    """
-
-    # Read the summary CSV
-    summary_df = pd.read_csv(summary_csv)
-
-    # Get unique tools
-    tools = summary_df['Tool'].unique()
-
-    exclude_suffix = ""
-    if exclude_tools:
-        exclude_suffix = "_without_" + "_".join(exclude_tools)
-
-    # Dynamically determine which metrics exist with variance values
-    available_var_metrics = [col.replace('_var', '') for col in summary_df.columns if col.endswith('_var')]
-
-    for metric in available_var_metrics:
-        plt.figure(figsize=(6, 5))
-        plt.tight_layout(pad=0.5)
-        plt.subplots_adjust(left=0.1, right=0.75, top=0.9, bottom=0.3)
-
-        # Prepare data for box plot
-        plot_data = []
-        tool_colors = []
-
-        for tool in tools:
-            if tool in exclude_tools:
-                continue
-
-            var_col = f"{metric}_var"
-            if var_col in summary_df.columns:
-                tool_vars = summary_df.loc[summary_df['Tool'] == tool, var_col].dropna().tolist()
-                if tool_vars:
-                    plot_data.append((tool, tool_vars))
-                    tool_colors.append(tool_color_mapping.get(tool, '#000000'))
-
-        if not plot_data:
-            continue
-
-        tool_labels, tool_vars = zip(*plot_data)
-        box = sns.boxplot(data=tool_vars, palette=tool_colors)
-
-        all_vars = list(chain.from_iterable(tool_vars))
-        if all(float(value).is_integer() for value in all_vars):
-            plt.gca().yaxis.set_major_locator(MaxNLocator(integer=True))
-
-        plt.xticks(ticks=range(len(tool_labels)), labels=tool_labels, rotation=45, fontsize=12)
-        plt.title(f'{metric} Variance', fontsize=10)
-        plt.grid(axis='y', linestyle='--', alpha=0.6)
-
-        legend_labels = [
-            Line2D([0], [0], marker='o', color='w', markerfacecolor=color, markersize=10, label=tool)
-            for tool, color in zip(tool_labels, tool_colors)
-        ]
-        plt.legend(handles=legend_labels, loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
-
-        plot_filename = f"results/{args.experiment_name}/benchmark/{metric}_var_boxplot{exclude_suffix}.pdf"
-        plt.savefig(plot_filename, dpi=300)
-        plt.close()
-
-        print(f"Box plot saved: {plot_filename}")
 
 def plot_combined_tool_metrics_single_dataset(summary_csv, full_tool_color_mapping, tools_to_plot=None, metrics=None):
-    import pandas as pd
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    from matplotlib.patches import Patch
-    import math
-    import os
-    import numpy as np
-
     sns.set_style('whitegrid')
     plt.rcParams.update({'axes.facecolor': 'white'})
 
     df = pd.read_csv(summary_csv)
 
-    if tools_to_plot is None:
-        tools_to_plot = [tool for tool in df['Tool'].unique() if tool != 'cellot']
-
     if metrics is None:
-        metrics = ['mse_mean', 'wasserstein_mean', 't_test_mean', 'common_DEGs_top_20_mean', 'common_enrichment_terms_mean', 'cosine_distance_mean', 'pearson_distance_mean', 'common_DEGs_top_100_mean', 'mmd_mean', 'r2_20_degs_mean', 'r2_100_degs_mean', 'r2_all_degs_mean']
+        metrics = [
+            'mse_mean', 'wasserstein_mean', 't_test_mean', 'common_DEGs_top_20_mean',
+            'common_enrichment_terms_mean', 'cosine_distance_mean', 'pearson_distance_mean',
+            'common_DEGs_top_100_mean', 'mmd_mean', 'r2_20_degs_mean', 'r2_100_degs_mean',
+            'r2_all_degs_mean'
+        ]
 
-    tools_with_cellot = ['cellot'] + tools_to_plot
-    tool_color_mapping = {tool: full_tool_color_mapping[tool] for tool in tools_with_cellot}
+    available_tools = df['Tool'].unique().tolist()
+    experiment_name = df['Experiment_name'].unique()[0]
 
-    integer_y_metrics = ['common_DEGs_top_20_mean', 'common_DEGs_top_100_mean', 'common_DEGs_all_mean', 'common_enrichment_terms_mean', 'r2_20_degs_mean', 'r2_100_degs_mean', 'r2_all_degs_mean']
+    # If user provides tools_to_plot, filter it to what's available in the dataframe
+    if tools_to_plot is None:
+        tools_to_plot = available_tools
+    else:
+        tools_to_plot = [tool for tool in tools_to_plot if tool in available_tools]
 
+    # Final list of tools for plotting
+    tools_in_plot = tools_to_plot.copy()
+
+    # Build the color mapping only for tools present
+    tool_color_mapping = {tool: full_tool_color_mapping[tool] for tool in tools_in_plot}
+
+    integer_y_metrics = [
+        'common_DEGs_top_20_mean', 'common_DEGs_top_100_mean',
+        'common_DEGs_all_mean', 'common_enrichment_terms_mean',
+        'r2_20_degs_mean', 'r2_100_degs_mean', 'r2_all_degs_mean'
+    ]
 
     for metric in metrics:
         fig, ax = plt.subplots(figsize=(6, 5))
-        df_metric = df[df['Tool'].isin(tools_with_cellot)]
-        cellot_vals = df_metric[df_metric['Tool'] == 'cellot'][metric].dropna()
-        tools_vals = df_metric[df_metric['Tool'] != 'cellot'][metric].dropna()
 
-        if len(cellot_vals) == 0 or len(tools_vals) == 0:
-            sns.boxplot(
-                x='Tool', y=metric, data=df_metric,
-                palette=tool_color_mapping, ax=ax,
-                order=tools_with_cellot, width=0.6,
-                dodge=False
-            )
-            ax.set_xticklabels(tools_with_cellot, rotation=45, fontsize=8)
-            ax.set_title(metric, fontsize=12)
-            ax.set_xlabel('')  # remove x-axis label
-            ax.set_ylabel('')  # remove y-axis label
-            ax.tick_params(axis='y', labelsize=8)
-            ax.grid(False)
-            if metric in integer_y_metrics:
-                ax.yaxis.get_major_locator().set_params(integer=True)
-            plt.tight_layout()
-            fig.savefig(f"results/benchmark/{metric}.pdf", dpi=300)
-            plt.close(fig)
-            continue
+        df_metric = df[df['Tool'].isin(tools_in_plot)]
 
-        cellot_min = cellot_vals.min()
-        tools_max = tools_vals.max()
+        if 'cellot' in tools_in_plot:
+            cellot_vals = df_metric[df_metric['Tool'] == 'cellot'][metric].dropna()
+            tools_vals = df_metric[df_metric['Tool'] != 'cellot'][metric].dropna()
 
-        if cellot_min > tools_max:
-            bbox = ax.get_position()
-            fig.delaxes(ax)
-            fig_width = bbox.width
-            fig_height = bbox.height
-            x0 = bbox.x0
-            y0 = bbox.y0
-            gap = 0.02
+            if len(cellot_vals) > 0 and len(tools_vals) > 0:
+                cellot_min = cellot_vals.min()
+                tools_max = tools_vals.max()
 
-            ax_bottom = fig.add_axes([x0, y0, fig_width, fig_height*0.48])
-            ax_top = fig.add_axes([x0, y0 + fig_height*0.48 + gap, fig_width, fig_height*0.48], sharex=ax_bottom)
+                if cellot_min > tools_max:
+                    # Split axis case
+                    bbox = ax.get_position()
+                    fig.delaxes(ax)
+                    fig_width = bbox.width
+                    fig_height = bbox.height
+                    x0 = bbox.x0
+                    y0 = bbox.y0
+                    gap = 0.02
 
-            sns.boxplot(
-                x='Tool', y=metric,
-                data=df_metric[df_metric['Tool'] == 'cellot'],
-                palette={'cellot': tool_color_mapping['cellot']},
-                ax=ax_top,
-                order=['cellot'],
-                width=0.6,
-                dodge=False
-            )
+                    ax_bottom = fig.add_axes([x0, y0, fig_width, fig_height * 0.48])
+                    ax_top = fig.add_axes([x0, y0 + fig_height * 0.48 + gap, fig_width, fig_height * 0.48], sharex=ax_bottom)
 
-            sns.boxplot(
-                x='Tool', y=metric,
-                data=df_metric[df_metric['Tool'] != 'cellot'],
-                palette={tool: tool_color_mapping[tool] for tool in tools_to_plot},
-                ax=ax_bottom,
-                order=tools_to_plot,
-                width=0.6,
-                dodge=False
-            )
-            ax_bottom.set_ylim(tools_vals.min() * 0.95, tools_max * 1.05)
-            ax_bottom.tick_params(axis='x', rotation=45, labelsize=8)
-            ax_bottom.tick_params(axis='y', labelsize=8)
-            ax_bottom.set_xlabel('')  # remove x-axis label
-            ax_bottom.set_ylabel('')  # remove y-axis label
-            if metric in integer_y_metrics:
-                ax_bottom.yaxis.get_major_locator().set_params(integer=True)
-            ax_bottom.grid(False)
+                    sns.boxplot(
+                        x='Tool', y=metric,
+                        data=df_metric[df_metric['Tool'] == 'cellot'],
+                        palette={'cellot': tool_color_mapping['cellot']},
+                        ax=ax_top,
+                        order=['cellot'],
+                        width=0.6,
+                        dodge=False
+                    )
 
-            
-            ax_top.set_ylim(cellot_min * 0.95, cellot_vals.max() * 1.05)
-            ax_top.tick_params(axis='x', which='both', bottom=False, labelbottom=False)
-            ax_top.tick_params(axis='y', labelsize=8)
-            ax_top.set_xlabel('')  # remove x-axis label
-            ax_top.set_ylabel('')  # remove y-axis label
-            if metric in integer_y_metrics:
-                ax_top.yaxis.get_major_locator().set_params(integer=True)
-            ax_top.grid(False)
+                    sns.boxplot(
+                        x='Tool', y=metric,
+                        data=df_metric[df_metric['Tool'] != 'cellot'],
+                        palette={tool: tool_color_mapping[tool] for tool in tools_in_plot if tool != 'cellot'},
+                        ax=ax_bottom,
+                        order=[tool for tool in tools_in_plot if tool != 'cellot'],
+                        width=0.6,
+                        dodge=False
+                    )
 
-            ax_top.spines['bottom'].set_visible(False)
-            ax_bottom.spines['top'].set_visible(False)
+                    ax_bottom.set_ylim(tools_vals.min() * 0.95, tools_max * 1.05)
+                    ax_top.set_ylim(cellot_min * 0.95, cellot_vals.max() * 1.05)
 
-            d = 0.03
-            kwargs = dict(marker=[(-1, -d), (1, d)], markersize=12,
-                          linestyle="none", color='k', mec='k', mew=1, clip_on=False)
-            ax_top.plot([0, 1], [0, 0], transform=ax_top.transAxes, **kwargs)
-            ax_bottom.plot([0, 1], [1, 1], transform=ax_bottom.transAxes, **kwargs)
+                    ax_bottom.tick_params(axis='x', rotation=45, labelsize=8)
+                    ax_bottom.tick_params(axis='y', labelsize=8)
+                    ax_top.tick_params(axis='x', which='both', bottom=False, labelbottom=False)
+                    ax_top.tick_params(axis='y', labelsize=8)
 
-            ax_top.set_title(metric, fontsize=12)
+                    ax_bottom.set_xlabel('')
+                    ax_bottom.set_ylabel('')
+                    ax_top.set_xlabel('')
+                    ax_top.set_ylabel('')
 
-        else:
-            sns.boxplot(
-                x='Tool', y=metric, data=df_metric,
-                palette=tool_color_mapping, ax=ax,
-                order=tools_with_cellot, width=0.6,
-                dodge=False
-            )
-            ax.set_xticklabels(tools_with_cellot, rotation=45, fontsize=8)
-            ax.set_title(metric, fontsize=12)
-            ax.set_xlabel('')  # remove x-axis label
-            ax.set_ylabel('')  # remove y-axis label
-            ax.tick_params(axis='y', labelsize=8)
-            ax.grid(False)
-            if metric in integer_y_metrics:
-                ax.yaxis.get_major_locator().set_params(integer=True)
+                    if metric in integer_y_metrics:
+                        ax_bottom.yaxis.get_major_locator().set_params(integer=True)
+                        ax_top.yaxis.get_major_locator().set_params(integer=True)
+
+                    ax_top.grid(False)
+                    ax_bottom.grid(False)
+
+                    ax_top.spines['bottom'].set_visible(False)
+                    ax_bottom.spines['top'].set_visible(False)
+
+                    d = 0.03
+                    kwargs = dict(marker=[(-1, -d), (1, d)], markersize=12,
+                                  linestyle="none", color='k', mec='k', mew=1, clip_on=False)
+                    ax_top.plot([0, 1], [0, 0], transform=ax_top.transAxes, **kwargs)
+                    ax_bottom.plot([0, 1], [1, 1], transform=ax_bottom.transAxes, **kwargs)
+
+                    ax_top.set_title(metric, fontsize=12)
+
+                    plt.tight_layout()
+                    fig.savefig(f"results/benchmark/{metric}.pdf", dpi=300)
+                    plt.close(fig)
+                    continue
+
+        # Simple boxplot (no split axis needed, or no cellot present)
+        sns.boxplot(
+            x='Tool', y=metric, data=df_metric,
+            palette=tool_color_mapping, ax=ax,
+            order=tools_in_plot, width=0.6,
+            dodge=False
+        )
+        ax.set_xticklabels(tools_in_plot, rotation=45, fontsize=8)
+        ax.set_title(metric, fontsize=12)
+        ax.set_xlabel('')
+        ax.set_ylabel('')
+        ax.tick_params(axis='y', labelsize=8)
+
+        if metric in integer_y_metrics:
+            ax.yaxis.get_major_locator().set_params(integer=True)
+
+        ax.grid(False)
 
         plt.tight_layout()
-        fig.savefig(f"results/{args.experiment_name}/benchmark/{metric}.pdf", dpi=300)
+        fig.savefig(f"results/{experiment_name}/benchmark/{metric}.pdf", dpi=300)
         plt.close(fig)
+
 
 
 

@@ -14,7 +14,7 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
 
 - CUDA 12.4+ (tested on 12.4)
 - Singularity 3.6+ (tested on 3.6 and 4.1)
-- About 50 GB disk space to download all environments  
+- About 60 GB disk space to download all environments (but we recommend selecting necessary tools) 
 
 # Installation
 - Create a conda environment with snakemake:
@@ -79,8 +79,9 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
 |scpregan| 7.19 GB|
 |scdisinfact| 6.71 GB|
 |trvae| 6.48 GB|
-|screen||
+|screen| 6.37 GB|
 |metrics/linear/control| 8.04 GB|
+|**Total**|60.21 GB|
 
 In details, the different tools require following CUDA versions:
 

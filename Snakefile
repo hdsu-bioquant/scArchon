@@ -85,8 +85,8 @@ with open(dataset_file) as config:
 rule all:
     input:
         output_tools,
-        #output_metrics,
-        #output_benchmark
+        output_metrics,
+        output_benchmark
 
 
 
