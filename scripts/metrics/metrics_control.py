@@ -145,6 +145,9 @@ for n_degs in [20, 100, adata.shape[1]]:
     else:
         distance_scores[f"r2_{n_degs}_degs"] = [r2]
 
+
+output_folder = f'results/{experiment_name}/metrics'
+os.makedirs(output_folder, exist_ok=True)
 distance_scores.to_csv(f'results/{experiment_name}/metrics/{experiment_name}_{tool}_{target}_distance_scores.csv', index=False)
 
 # Output flag

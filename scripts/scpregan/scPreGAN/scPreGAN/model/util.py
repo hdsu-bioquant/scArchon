@@ -14,7 +14,7 @@ def label_encoder(adata, cell_type_key, encode_attr):
     labels = le.fit_transform(encode_list)
     labels = labels.reshape(-1, 1)
 
-    le_OneHot = preprocessing.OneHotEncoder(sparse_output=False)
+    le_OneHot = preprocessing.OneHotEncoder(sparse=False)
     labels_onehot = le_OneHot.fit_transform(labels)
 
     return labels_onehot[len(encode_attr) :,]

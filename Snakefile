@@ -1,8 +1,8 @@
 import yaml
 from snakemake.utils import min_version
 import os
+os.makedirs("logs", exist_ok=True)
 
-min_version("8.13.0")
 
 report: "report/workflow.rst"
 
@@ -85,8 +85,8 @@ with open(dataset_file) as config:
 rule all:
     input:
         output_tools,
-        output_metrics,
-        output_benchmark
+        #output_metrics,
+        #output_benchmark
 
 
 

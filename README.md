@@ -24,7 +24,7 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
 - Activate the environment: `conda activate snakemake_env`
 - Ensure that you have a GPU with CUDA 12.4+ and Singularity 3.6+ available
 
-# Input / Output
+# Input / Outputs
 - Input: annotated dataset (adata) in .h5ad format. The dataset should ideally be count normalised (typically to 10,000) and log-normalised. The dataset should contain the couples control-perturbed necessary for the training along the control you want to get the prediciton from. See the Kang dataset and the section below for an example.
 - Outputs:
     - .h5ad with prediction, alongside the control and perturbed data. Stored in `results/{experiment_name}/h5ad/{experiment_name}_{tool}_{target}.h5ad`
@@ -69,14 +69,18 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
     <img src="images/003.png" alt="Description of Image" style="width: 100%; margin: 0 auto;">
 </div>
 
-|Tool | Singularity disk space|
+| | Singularity image disk space|
 |-----|:-----------------------:|
-|cellot| 2.22 GB |
+|cellot (+scgen)| 2.22 GB (+6.08 GB)|
 |cpa| 6.48 GB|
 |scgen| 6.08 GB|
 |scvidr| 5.97 GB|
-|scpram||
-|metrics| 8.04 GB|
+|scpram| 4.67 GB|
+|scpregan| 7.19 GB|
+|scdisinfact| 6.71 GB|
+|trvae| 6.48 GB|
+|screen||
+|metrics/linear/control| 8.04 GB|
 
 In details, the different tools require following CUDA versions:
 
@@ -90,7 +94,7 @@ In details, the different tools require following CUDA versions:
 |scpregan| 12.1 |
 |screen| 11.7|
 |scgen| 11.7|
-|trVAE| 12.4|
+|trvae| 12.4|
 
 Below CUDA 11.6, no tool can be ran. After CUDA 12.4 all tools can be ran. Note that cellOT does not requ
 

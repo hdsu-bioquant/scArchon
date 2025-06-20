@@ -15,3 +15,7 @@ flags
 results
 config
 *config/datasets.tsv
+scripts/scvidr/vidr/__pycache__
+scripts/scdisinfact/scDisInFact_/__pycache__
+scripts/trvae/trvaep/__pycache__
+scripts/trvae/trvaep/model/__pycache__
