@@ -69,6 +69,8 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
     <img src="images/003.png" alt="Description of Image" style="width: 100%; margin: 0 auto;">
 </div>
 
+- The environments are pulled as singularity images locally. They require following amounts of space.
+
 | | Singularity image disk space|
 |-----|:-----------------------:|
 |cellot (+scgen)| 2.22 GB (+6.08 GB)|
@@ -83,11 +85,11 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
 |metrics/linear/control| 8.04 GB|
 |**Total**|60.21 GB|
 
-In details, the different tools require following CUDA versions:
+- In details, the different tools require following CUDA versions.
 
 ||CUDA version|
 |--|:----------:|
-|cellot| 10.2 |
+|cellot| 10.2|
 |cpa| 11.7|
 |scdisinfact|12.4|
 |scpram|11.6|
@@ -97,7 +99,7 @@ In details, the different tools require following CUDA versions:
 |scgen| 11.7|
 |trvae| 12.4|
 
-Below CUDA 11.6, no tool can be ran. After CUDA 12.4 all tools can be ran. Note that cellOT does not requ
+Below CUDA 11.6, no tool can be ran. After CUDA 12.4 all tools can be ran.
 
 
 
