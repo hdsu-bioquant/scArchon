@@ -59,7 +59,7 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
     - `--singularity-args '--nv -B .:/dum'` ensures GPU usage
     -  `--cores all` requests all CPUs available
     - `--jobs 1` runs one job after the other
-    - `--keep-going` ensures the pipeline continues running even if there is a bug in one of the tool to not lose time
+    - `--keep-going` ensures the pipeline continues running even if a job fails to not lose time
 
 # User-useful information
 - The running time of some tools can be long. Given the performance of cellOT, CPA and scPreGAN, we suggest you to leave them out of your run.
