@@ -68,7 +68,7 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
     <img src="images/003.png" alt="Description of Image" style="width: 100%; margin: 0 auto;">
 </div>
 
-- Pulling environments via singularity may take some time depending on your downloading speed. The environment only needs to be pulled once. It will be stored under `.snakemake/singularity`. The environments will take up following disk space.
+- Pulling environments via singularity may take some time depending on your downloading speed. The environments only need to be pulled once. They will be stored under `.snakemake/singularity`. The environments will take up following disk space.
 
 | | Singularity image disk space|
 |-----|:-----------------------:|
