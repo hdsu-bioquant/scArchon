@@ -109,8 +109,8 @@ print(f'--------------- Training scGen ---------------')
 model.train(
     max_epochs=100,
     batch_size=32,
-    early_stopping=False,
-    early_stopping_patience=5
+    early_stopping=True,
+    early_stopping_patience=25
 )
 
 

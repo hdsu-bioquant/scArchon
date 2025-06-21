@@ -5,16 +5,16 @@
 # scArchon: benchmark or run single-cell prediciton tools on your own dataset
 
 scArchon is a modular, reproducible benchmarking platform for evaluating single-cell perturbation response prediction tools. Built on Snakemake, it provides an extensible framework to compare deep learning methods across diverse datasets using both statistical and biological metrics. Why scArchon?
-While many tools exist to predict single-cell responses to perturbations (e.g., drug treatments), their systematic comparison has been limited. scArchon helps standardize benchmarking and highlights important nuances—such as when models with high quantitative scores fail to retain key biological signals.
+While many tools exist to predict single-cell responses to perturbations (e.g., drug treatments), their systematic comparison has been limited. Importantly, scArchon provides environments for each of the tools to aleviate problems related to their installation. scArchon helps standardize benchmarking and highlights important nuances—such as when models with high quantitative scores fail to retain key biological signals.
 
 We invite the community to adopt and contribute to scArchon, helping accelerate progress in single-cell perturbation modeling.
 
 # Requirements
-Running the deep learning models require GPU with CUDA 12.4+. To pull the environments from Dockerhub, Singularity 3.6+ needs to be installed on your machine. To store the environments, a disk space of about 50 GB is required. 
+Running the deep learning models require GPU with CUDA 12.4+. To pull the environments from Dockerhub, Singularity 3.6+ needs to be installed on your machine. To store the environments, a disk space of about 60 GB is required. 
 
 - CUDA 12.4+ (tested on 12.4)
 - Singularity 3.6+ (tested on 3.6 and 4.1)
-- About 60 GB disk space to download all environments (but we recommend selecting necessary tools) 
+- About 60 GB disk space to download all environments (but we recommend selecting a subset of tools) 
 
 # Installation
 - Create a conda environment with snakemake:
@@ -25,7 +25,7 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
 - Ensure that you have a GPU with CUDA 12.4+ and Singularity 3.6+ available
 
 # Input / Outputs
-- Input: annotated dataset (adata) in .h5ad format. The dataset should ideally be count normalised (typically to 10,000) and log-normalised. The dataset should contain the couples control-perturbed necessary for the training along the control you want to get the prediciton from. See the Kang dataset and the section below for an example.
+- Input: annotated dataset (adata) in .h5ad format. The dataset should ideally be count normalised (typically to 10,000) and log-normalised. The dataset should contain the couples control-perturbed necessary for the training along the control you want to get the prediction from. Ensure unique variables and observations. See the Kang dataset and the section *Running your experiments* for an example.
 - Outputs:
     - .h5ad with prediction, alongside the control and perturbed data. Stored in `results/{experiment_name}/h5ad/{experiment_name}_{tool}_{target}.h5ad`
     - Metrics results. Stored in `results/{experiment_name}/metrics/{experiment_name}_{tool}_{target}_distance_scores.csv`
@@ -62,14 +62,13 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
     - `--keep-going` ensures the pipeline continues running even if there is a bug in one of the tool to not lose time
 
 # User-useful information
-- Pulling environment via singularity may take some time depending on your downloading speed. The environment only needs to be pulled once. It will be stored under `.snakemake/singularity`.
 - The running time of some tools can be long. Given the performance of cellOT, CPA and scPreGAN, we suggest you to leave them out of your run.
 
 <div align="center">
     <img src="images/003.png" alt="Description of Image" style="width: 100%; margin: 0 auto;">
 </div>
 
-- The environments are pulled as singularity images locally. They require following amounts of space.
+- Pulling environments via singularity may take some time depending on your downloading speed. The environment only needs to be pulled once. It will be stored under `.snakemake/singularity`. The environments will take up following disk space.
 
 | | Singularity image disk space|
 |-----|:-----------------------:|
