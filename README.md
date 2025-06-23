@@ -5,6 +5,7 @@
 <!-- badges: start -->
 [![license: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![GitHub repo views](https://komarev.com/ghpvc/?username=hdsu-bioquant&repo=scArchon&label=Views&color=blue)](https://github.com/hdsu-bioquant/scArchon)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/scArchon)](https://pypi.org/project/scArchon/)
 [![GitHub stars](https://img.shields.io/github/stars/hdsu-bioquant/scArchon.svg?style=social&label=Star)](https://github.com/hdsu-bioquant/scArchon/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/hdsu-bioquant/scArchon.svg?style=social&label=Fork)](https://github.com/hdsu-bioquant/scArchon/network)
 <!-- badges: end -->
@@ -107,7 +108,7 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
 |scgen| 11.7|
 |trvae| 12.4|
 
-Below CUDA 11.6, no tool can be ran. After CUDA 12.4 all tools can be ran.
+Below CUDA 11.6, no tool can be run. After CUDA 12.4 all tools can be run.
 
 
 
