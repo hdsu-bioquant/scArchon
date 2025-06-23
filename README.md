@@ -47,7 +47,7 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
         - the image `{experiment_name}_{tool}_{target}_score_genes_enriched_terms_only_in_predicted.pdf`shows the gene score for top 6 most statistically significant GO terms from the predicted file (compated to control)
         - the image `{experiment_name}_{tool}_{target}_score_genes_enriched_terms_only_in_stimulated.pdf`shows the gene score for top 6 most statistically significant GO terms from the perturbed file (compated to control)
         -  the image `{experiment_name}_{tool}_{target}_score_genes_enriched_terms_common.pdf` shows the gene score for top 6 most statistically significant GO terms that are shared between the predicted and perturbed files. 
-
+    - results/{experiment_name}/benchmark: comparison of the different scores obtained on the different targets by the different tools.
 
 # Running your experiments
 
