@@ -1,2 +1,2 @@
 file_path	condition	condition_control	condition_stimulated	batch	target	experiment_name	output_dir	Tools
-data/kang.h5ad	condition	control	stimulated	cell_type	CD4T	kang	results/kang/	cellot,cpa
+data/kang.h5ad	condition	control	stimulated	cell_type	CD4T	kang	results/kang/	scpram,scvir
