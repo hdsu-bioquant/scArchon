@@ -2,6 +2,15 @@
   <img src="images/002.png" alt="Description of Image" width="80%">
 </p>
 
+<!-- badges: start -->
+[![license: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![GitHub repo views](https://komarev.com/ghpvc/?username=hdsu-bioquant&repo=scArchon&label=Views&color=blue)](https://github.com/hdsu-bioquant/scArchon)
+[![GitHub stars](https://img.shields.io/github/stars/hdsu-bioquant/scArchon.svg?style=social&label=Star)](https://github.com/hdsu-bioquant/scArchon/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/hdsu-bioquant/scArchon.svg?style=social&label=Fork)](https://github.com/hdsu-bioquant/scArchon/network)
+<!-- badges: end -->
+
+
+
 # scArchon: benchmark or run single-cell prediciton tools on your own dataset
 
 scArchon is a modular, reproducible benchmarking platform for evaluating single-cell perturbation response prediction tools. Built on Snakemake, it provides an extensible framework to compare deep learning methods across diverse datasets using both statistical and biological metrics. Why scArchon?
