@@ -3,6 +3,7 @@
 </p>
 
 <!-- badges: start -->
+[![bioRxiv Preprint](https://img.shields.io/badge/bioRxiv-Preprint-orange)](https://www.biorxiv.org/content/10.1101/2025.06.23.661046v1)
 [![license: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![GitHub repo views](https://komarev.com/ghpvc/?username=hdsu-bioquant&repo=scArchon&label=Views&color=blue)](https://github.com/hdsu-bioquant/scArchon)
 [![GitHub stars](https://img.shields.io/github/stars/hdsu-bioquant/scArchon.svg?style=social&label=Star)](https://github.com/hdsu-bioquant/scArchon/stargazers)
@@ -109,6 +110,3 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
 |trvae| 12.4|
 
 Below CUDA 11.6, no tool can be run. After CUDA 12.4 all tools can be run.
-
-
-
