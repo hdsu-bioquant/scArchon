@@ -12,12 +12,20 @@
 
 
 
-# scArchon: benchmark or run single-cell prediciton tools on your own dataset
+# scArchon: benchmark or run single-cell prediction tools on your own dataset
 
 scArchon is a modular, reproducible benchmarking platform for evaluating single-cell perturbation response prediction tools. Built on Snakemake, it provides an extensible framework to compare deep learning methods across diverse datasets using both statistical and biological metrics. Why scArchon?
 While many tools exist to predict single-cell responses to perturbations (e.g., drug treatments), their systematic comparison has been limited. Importantly, scArchon provides environments for each of the tools to aleviate problems related to their installation. scArchon helps standardize benchmarking and highlights important nuances—such as when models with high quantitative scores fail to retain key biological signals.
 
 We invite the community to adopt and contribute to scArchon, helping accelerate progress in single-cell perturbation modeling.
+
+## Citation
+
+"Tracking biological hallucinations in single-cell perturbation predictions using scArchon, a comprehensive benchmarking platform" 
+Jean Radig, Robin Droit, Daria Ivona Doncevic, Albert Li, Duc Thien Bui, Thaddeus Kuehn, Luis Herfurth, Carl Herrmann
+
+[bioRxiv 2025.06.23.661046](https://doi.org/10.1101/2025.06.23.661046) 
+
 
 # Requirements
 Running the deep learning models require GPU with CUDA 12.4+. To pull the environments from Dockerhub, Singularity 3.6+ needs to be installed on your machine. To store the environments, a disk space of about 60 GB is required. 
