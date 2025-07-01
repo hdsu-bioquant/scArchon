@@ -72,6 +72,11 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
     - `--jobs 1` runs one job after the other
     - `--keep-going` ensures the pipeline continues running even if a job fails to not lose time
 
+# Youtube tutorials
+
+- [scArchon: how to run on your own data](https://youtu.be/OEM51lyS5as) 
+- [scArchon: how to add a new tool](https://youtu.be/sOf-wCVfiUA)
+
 # User-useful information
 - The running time of some tools can be long. Given the performance of cellOT, CPA and scPreGAN, we suggest you to leave them out of your run.
 
