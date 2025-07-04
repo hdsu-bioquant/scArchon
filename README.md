@@ -26,6 +26,10 @@ Jean Radig, Robin Droit, Daria Ivona Doncevic, Albert Li, Duc Thien Bui, Thaddeu
 
 [bioRxiv 2025.06.23.661046](https://doi.org/10.1101/2025.06.23.661046) 
 
+## Youtube tutorials
+
+- [scArchon: how to run on your own data](https://youtu.be/OEM51lyS5as) 
+- [scArchon: how to add a new tool](https://youtu.be/sOf-wCVfiUA)
 
 # Requirements
 Running the deep learning models require GPU with CUDA 12.4+. To pull the environments from Dockerhub, Singularity 3.6+ needs to be installed on your machine. To store the environments, a disk space of about 60 GB is required. 
@@ -42,8 +46,30 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
 - Activate the environment: `conda activate snakemake_env`
 - Ensure that you have a GPU with CUDA 12.4+ and Singularity 3.6+ available
 
+# Running your experiments
+
+- Clone or download scArchon and cd into the directory.
+- You can set up your experiments in `config/datasets.tsv`.
+
+<div align="center">
+    <img src="images/001.png" alt="Description of Image" style="width: 100%; margin: 0 auto;">
+</div>
+
+- Do not put spaces between the comas separating the different targets or tools. Write the tools in lower caps. If your batch values have spaces, e.g. "T Cell", remove the space, i.e. change it to "TCell", because of the tsv format it won't work otherwise. 
+- If you are running the tools on a single GPU, it is suggested to run the tools one by one, otherwise the tasks will swap and will take overall longer. We suggest to run the pipeline with following command:
+
+    ```python
+    snakemake --use-singularity --singularity-args '--nv -B .:/dum' --cores all --jobs 1 --keep-going
+    ```
+
+    - `--use-singularity` will pull the docker images from the web
+    - `--singularity-args '--nv -B .:/dum'` ensures GPU usage
+    -  `--cores all` requests all CPUs available
+    - `--jobs 1` runs one job after the other
+    - `--keep-going` ensures the pipeline continues running even if a job fails to not lose time
+
 # Input / Outputs
-- Input: annotated dataset (adata) in .h5ad format. The dataset should ideally be count normalised (typically to 10,000) and log-normalised. The dataset should contain the couples control-perturbed necessary for the training along the control you want to get the prediction from. Ensure unique variables and observations. See the Kang dataset and the section *Running your experiments* for an example.
+- Input: annotated dataset (adata) in .h5ad format. The dataset should ideally be count normalised (typically to 10,000) and log-normalised. The dataset should contain the couples control-perturbed necessary for the training along the control you want to get the prediction from. Ensure unique variables and observations. See the Kang dataset and the section *Running your experiments* for an example. Care, if your batch values have spaces, e.g. "T Cell", remove the space, i.e. change it to "TCell", because of the tsv format it won't work otherwise. 
 - Outputs:
     - .h5ad with prediction, alongside the control and perturbed data. Stored in `results/{experiment_name}/h5ad/{experiment_name}_{tool}_{target}.h5ad`
     - Metrics results. Stored in `results/{experiment_name}/metrics/{experiment_name}_{tool}_{target}_distance_scores.csv`
@@ -57,33 +83,6 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
         - the image `{experiment_name}_{tool}_{target}_score_genes_enriched_terms_only_in_stimulated.pdf`shows the gene score for top 6 most statistically significant GO terms from the perturbed file (compated to control)
         -  the image `{experiment_name}_{tool}_{target}_score_genes_enriched_terms_common.pdf` shows the gene score for top 6 most statistically significant GO terms that are shared between the predicted and perturbed files. 
     - results/{experiment_name}/benchmark: comparison of the different scores obtained on the different targets by the different tools.
-
-# Running your experiments
-
-- Clone or download scArchon and cd into the directory.
-- You can set up your experiments in `config/datasets.tsv`.
-
-<div align="center">
-    <img src="images/001.png" alt="Description of Image" style="width: 100%; margin: 0 auto;">
-</div>
-
-- Do not put spaces between the comas separating the different targets or tools. Write the tools in lower caps. 
-- If you are running the tools on a single GPU, it is suggested to run the tools one by one, otherwise the tasks will swap and will take overall longer. We suggest to run the pipeline with following command:
-
-    ```python
-    snakemake --use-singularity --singularity-args '--nv -B .:/dum' --cores all --jobs 1 --keep-going
-    ```
-
-    - `--use-singularity` will pull the docker images from the web
-    - `--singularity-args '--nv -B .:/dum'` ensures GPU usage
-    -  `--cores all` requests all CPUs available
-    - `--jobs 1` runs one job after the other
-    - `--keep-going` ensures the pipeline continues running even if a job fails to not lose time
-
-# Youtube tutorials
-
-- [scArchon: how to run on your own data](https://youtu.be/OEM51lyS5as) 
-- [scArchon: how to add a new tool](https://youtu.be/sOf-wCVfiUA)
 
 # User-useful information
 - The running time of some tools can be long. Given the performance of cellOT, CPA and scPreGAN, we suggest you to leave them out of your run.
