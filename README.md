@@ -55,7 +55,10 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
     <img src="images/001.png" alt="Description of Image" style="width: 100%; margin: 0 auto;">
 </div>
 
-- Do not put spaces between the comas separating the different targets or tools. Write the tools in lower caps. If your batch values have spaces, e.g. "T Cell", remove the space (also in your .h5ad), i.e. change it to "TCell", because of the tsv format it won't work otherwise. 
+- Prepare your adata: if your batch values have spaces, e.g. "T Cell", remove the space (also in your .h5ad), i.e. change it to "TCell", because of the tsv format it won't work otherwise. To ensure correct data format, use `adata.write("adata.h5ad", compression='gzip')` when saving your adata before running the pipeline.
+
+- Do not put spaces between the comas separating the different targets or tools. Write the tools in lower caps. 
+
 - If you are running the tools on a single GPU, it is suggested to run the tools one by one, otherwise the tasks will swap and will take overall longer. We suggest to run the pipeline with following command:
 
     ```python
