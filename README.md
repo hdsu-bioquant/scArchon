@@ -131,6 +131,6 @@ More tools are coming out and need to be benchmarked. Adding the tools also requ
 
 - [scCADE](https://ieeexplore.ieee.org/document/10822339). Added to IEEE Xplore on the 10th of January 2025. Compared against scGen, scPreGAN, CPA and scPRAM.
 - [scVAEder](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-025-03519-4) Published on the 21st of March 2025. They compare against scGen and scPreGAN.
-- [coupleVAE](https://academic.oup.com/bib/article/26/2/bbaf126/8104857) Published 3 of April 2025. They compare against scPreGAN, trVAE, scGen, CVAE, scPRAM and scVIDR.
+- [coupleVAE](https://academic.oup.com/bib/article/26/2/bbaf126/8104857) Published on the 3rd of April 2025. They compare against scPreGAN, trVAE, scGen, CVAE, scPRAM and scVIDR.
 
 If you would like to add your own tool or need any help, please do not hesitate to contact us.
