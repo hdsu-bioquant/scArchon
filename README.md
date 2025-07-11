@@ -125,3 +125,12 @@ Running the deep learning models require GPU with CUDA 12.4+. To pull the enviro
 |trvae| 12.4|
 
 Below CUDA 11.6, no tool can be run. After CUDA 12.4 all tools can be run.
+
+# Tools to be added
+More tools are coming out and need to be benchmarked. Adding the tools also require to be able to run and reproduce the results in the papers when available. These two steps might require more information and changes from the authors of the given paper, which may lead to some delay in their integration in the pipeline. Hereafter is a list of tool we are planning to add to the pipeline. 
+
+- [scCADE](https://ieeexplore.ieee.org/document/10822339). Added to IEEE Xplore on the 10th of January 2025. Compared against scGen, scPreGAN, CPA and scPRAM.
+- [scVAEder](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-025-03519-4) Published on the 21st of March 2025. They compare against scGen and scPreGAN.
+- [coupleVAE](https://academic.oup.com/bib/article/26/2/bbaf126/8104857) Published 3 of April 2025. They compare against scPreGAN, trVAE, scGen, CVAE, scPRAM and scVIDR.
+
+If you would like to add your own tool or need any help, please do not hesitate to contact us.
